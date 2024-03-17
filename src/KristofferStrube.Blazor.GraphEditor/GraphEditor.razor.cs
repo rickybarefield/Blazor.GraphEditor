@@ -81,8 +81,8 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
         foreach (TNode node in nodes)
         {
             Node<TNode, TEdge> element = Node<TNode, TEdge>.AddNew(SVGEditor, this, node);
-            element.Cx = Random.Shared.NextDouble() * 20;
-            element.Cy = Random.Shared.NextDouble() * 20;
+            element.NodeElement.Cx = Random.Shared.NextDouble() * 20;
+            element.NodeElement.Cy = Random.Shared.NextDouble() * 20;
             nodeElementDictionary.Add(node, element);
         }
         foreach (TEdge edge in edges)
@@ -129,8 +129,8 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
         {
             if (newNodeElement.Edges.Count is 0)
             {
-                newNodeElement.Cx = Random.Shared.NextDouble() * 20;
-                newNodeElement.Cy = Random.Shared.NextDouble() * 20;
+                newNodeElement.NodeElement.Cx = Random.Shared.NextDouble() * 20;
+                newNodeElement.NodeElement.Cy = Random.Shared.NextDouble() * 20;
             }
             else
             {
@@ -142,10 +142,10 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
                     newX += neighborMirroredPosition.x / newNodeElement.Edges.Count();
                     newY += neighborMirroredPosition.y / newNodeElement.Edges.Count();
                 }
-                newNodeElement.Cx = newX;
-                newNodeElement.Cy = newY;
+                newNodeElement.NodeElement.Cx = newX;
+                newNodeElement.NodeElement.Cy = newY;
             }
-            SVGEditor.AddElement(newNodeElement);
+            SVGEditor.AddElement(newNodeElement.NodeElement);
         }
         nodeElements = SVGEditor.Elements.Where(e => e is Node<TNode, TEdge>).Select(e => (Node<TNode, TEdge>)e).ToArray();
 
@@ -164,10 +164,10 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
 
         if (neighborsNeighbors.Length is 0)
         {
-            var randomAngle = neighborNode.Cx + Random.Shared.NextDouble() * Math.PI;
+            var randomAngle = neighborNode.NodeElement.Cx + Random.Shared.NextDouble() * Math.PI;
             return (
-                x: neighborNode.Cx + Math.Sin(randomAngle) * edgeLength,
-                y: neighborNode.Cy + Math.Cos(randomAngle) * edgeLength
+                x: neighborNode.NodeElement.Cx + Math.Sin(randomAngle) * edgeLength,
+                y: neighborNode.NodeElement.Cy + Math.Cos(randomAngle) * edgeLength
             );
         }
         else
@@ -177,13 +177,13 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
 
             foreach (var neighborsNeighborNode in neighborsNeighbors)
             {
-                averageXPositionOfNeighborsNeighbors += neighborsNeighborNode.Cx / neighborsNeighbors.Length;
-                averageYPositionOfNeighborsNeighbors += neighborsNeighborNode.Cy / neighborsNeighbors.Length;
+                averageXPositionOfNeighborsNeighbors += neighborsNeighborNode.NodeElement.Cx / neighborsNeighbors.Length;
+                averageYPositionOfNeighborsNeighbors += neighborsNeighborNode.NodeElement.Cy / neighborsNeighbors.Length;
             }
             // TODO: Handle the case where averagePositionOfNeighborsNeighbors==neighborsPosition;
             var differenceBetweenAverageNeighborsNeighborsAndNeighbor = (
-                x: averageXPositionOfNeighborsNeighbors - neighborNode.Cx,
-                y: averageYPositionOfNeighborsNeighbors - neighborNode.Cy
+                x: averageXPositionOfNeighborsNeighbors - neighborNode.NodeElement.Cx,
+                y: averageYPositionOfNeighborsNeighbors - neighborNode.NodeElement.Cy
             );
             var distanceBetweenAverageNeighborsNeighborsAndNeighbor = Math.Sqrt(Math.Pow(differenceBetweenAverageNeighborsNeighborsAndNeighbor.x, 2) + Math.Pow(differenceBetweenAverageNeighborsNeighborsAndNeighbor.y, 2));
             var normalizedVectorBetweenAverageNeighborsNeighborsAndNeighbor = (
@@ -192,8 +192,8 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
             );
 
             return (
-                x: neighborNode.Cx - normalizedVectorBetweenAverageNeighborsNeighborsAndNeighbor.x * edgeLength,
-                y: neighborNode.Cy - normalizedVectorBetweenAverageNeighborsNeighborsAndNeighbor.y * edgeLength
+                x: neighborNode.NodeElement.Cx - normalizedVectorBetweenAverageNeighborsNeighborsAndNeighbor.x * edgeLength,
+                y: neighborNode.NodeElement.Cy - normalizedVectorBetweenAverageNeighborsNeighborsAndNeighbor.y * edgeLength
             );
         }
     }
@@ -213,8 +213,8 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
                 }
 
                 Node<TNode, TEdge> node2 = nodeElements[j];
-                double dx = node1.Cx - node2.Cx;
-                double dy = node1.Cy - node2.Cy;
+                double dx = node1.NodeElement.Cx - node2.NodeElement.Cx;
+                double dy = node1.NodeElement.Cy - node2.NodeElement.Cy;
                 double d = Math.Sqrt(dx * dx + dy * dy);
                 double force;
                 if (node1.NeighborNodes.TryGetValue(node2, out var edge))
@@ -230,10 +230,12 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
                 my -= dy * 0.1 * force;
             }
 
-            if (!SVGEditor.SelectedShapes.Contains(node1))
+            var nodeElementAsShape = node1.NodeElement as Shape;
+
+            if (nodeElementAsShape != null && !SVGEditor.SelectedShapes.Contains(nodeElementAsShape))
             {
-                node1.Cx += mx;
-                node1.Cy += my;
+                node1.NodeElement.Cx += mx;
+                node1.NodeElement.Cy += my;
             }
         }
 

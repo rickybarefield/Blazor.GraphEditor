@@ -64,14 +64,14 @@ public class Edge<TNodeData, TEdgeData> : Line where TNodeData : IEquatable<TNod
 
     public void SetStart((double x, double y) towards)
     {
-        double differenceX = towards.x - From!.Cx;
-        double differenceY = towards.y - From!.Cy;
+        double differenceX = towards.x - From!.NodeElement.Cx;
+        double differenceY = towards.y - From!.NodeElement.Cy;
         double distance = Math.Sqrt((differenceX * differenceX) + (differenceY * differenceY));
 
         if (distance > 0)
         {
-            X1 = From!.Cx + (differenceX / distance * From.R);
-            Y1 = From!.Cy + (differenceY / distance * From.R);
+            X1 = From!.NodeElement.Cx + (differenceX / distance * From.NodeElement.Radius);
+            Y1 = From!.NodeElement.Cy + (differenceY / distance * From.NodeElement.Radius);
         }
     }
 
@@ -83,19 +83,19 @@ public class Edge<TNodeData, TEdgeData> : Line where TNodeData : IEquatable<TNod
             return;
         }
 
-        double differenceX = To.Cx - From.Cx;
-        double differenceY = To.Cy - From.Cy;
+        double differenceX = To.NodeElement.Cx - From.NodeElement.Cx;
+        double differenceY = To.NodeElement.Cy - From.NodeElement.Cy;
         double distance = Math.Sqrt((differenceX * differenceX) + (differenceY * differenceY));
 
-        if (distance < To.R + From.R + GraphEditor.EdgeWidthMapper(Data) * 3)
+        if (distance < To.NodeElement.Radius + From.NodeElement.Radius + GraphEditor.EdgeWidthMapper(Data) * 3)
         {
             (X1, Y1) = (X2, Y2);
         }
         else
         {
-            SetStart((To.Cx, To.Cy));
-            X2 = To.Cx - (differenceX / distance * (To.R + GraphEditor.EdgeWidthMapper(Data) * 3));
-            Y2 = To.Cy - (differenceY / distance * (To.R + GraphEditor.EdgeWidthMapper(Data) * 3));
+            SetStart((To.NodeElement.Cx, To.NodeElement.Cy));
+            X2 = To.NodeElement.Cx - (differenceX / distance * (To.NodeElement.Radius + GraphEditor.EdgeWidthMapper(Data) * 3));
+            Y2 = To.NodeElement.Cy - (differenceY / distance * (To.NodeElement.Radius + GraphEditor.EdgeWidthMapper(Data) * 3));
         }
     }
 
@@ -125,5 +125,10 @@ public class Edge<TNodeData, TEdgeData> : Line where TNodeData : IEquatable<TNod
 
         SVG.Elements.Add(edge);
         return edge;
+    }
+
+    public void Remove()
+    {
+        SVG.RemoveElement(this);
     }
 }
