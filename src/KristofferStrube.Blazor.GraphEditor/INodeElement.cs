@@ -10,4 +10,6 @@ public interface INodeElement<TNodeData, TEdgeData> : ISVGElement where TNodeDat
     public double Cy { get; set; }
 
     public double Radius { get; }
+
+    public Node<TNodeData, TEdgeData> Node { get; }
 }

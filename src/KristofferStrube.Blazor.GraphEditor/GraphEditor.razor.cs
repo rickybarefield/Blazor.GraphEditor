@@ -96,7 +96,7 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
 
         await Task.Yield();
         StateHasChanged();
-        nodeElements = SVGEditor.Elements.Where(e => e is Node<TNode, TEdge>).Select(e => (Node<TNode, TEdge>)e).ToArray();
+        nodeElements = SVGEditor.Elements.Where(e => e is INodeElement<TNode, TEdge>).Select(e => ((INodeElement<TNode, TEdge>)e).Node).ToArray();
     }
 
 
@@ -147,7 +147,7 @@ public partial class GraphEditor<TNode, TEdge> : ComponentBase where TNode : IEq
             }
             SVGEditor.AddElement(newNodeElement.NodeElement);
         }
-        nodeElements = SVGEditor.Elements.Where(e => e is Node<TNode, TEdge>).Select(e => (Node<TNode, TEdge>)e).ToArray();
+        nodeElements = SVGEditor.Elements.Where(e => e is INodeElement<TNode, TEdge>).Select(e => ((INodeElement<TNode, TEdge>)e).Node).ToArray();
 
         foreach (Edge<TNode, TEdge> edge in SVGEditor.Elements.Where(e => e is Edge<TNode, TEdge>).Cast<Edge<TNode, TEdge>>())
         {

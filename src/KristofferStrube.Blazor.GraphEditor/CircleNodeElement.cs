@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace KristofferStrube.Blazor.GraphEditor;
 
-class CircleNodeElement<TNodeData, TEdgeData> : Circle, INodeElement<TNodeData, TEdgeData> 
+public class CircleNodeElement<TNodeData, TEdgeData> : Circle, INodeElement<TNodeData, TEdgeData> 
     where TNodeData : IEquatable<TNodeData> {
 
-    private Node<TNodeData, TEdgeData> Node { get; init; }
+    public Node<TNodeData, TEdgeData> Node { get; init; }
+
+    public string? Id { get; set; }
+
 
     public CircleNodeElement(IElement element, SVGEditor.SVGEditor svg, Node<TNodeData, TEdgeData> node) : base(element, svg) {
 
@@ -53,4 +56,22 @@ class CircleNodeElement<TNodeData, TEdgeData> : Circle, INodeElement<TNodeData, 
     {
         Node.RemoveEdges();
     }
+
+    public override Type Presenter => typeof(NodeEditor<TNodeData, TEdgeData>);
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CircleNodeElement<TNodeData, TEdgeData> node && Equals(node);
+    }
+
+    public bool Equals(CircleNodeElement<TNodeData, TEdgeData> obj)
+    {
+        return obj.Id?.Equals(Id) ?? false;
+    }
+
 }

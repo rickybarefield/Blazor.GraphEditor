@@ -16,12 +16,14 @@ public class Node<TNodeData, TEdgeData> where TNodeData : IEquatable<TNodeData>
 
     public TNodeData Data { get; set; }
 
+    public string? Id { get { return NodeElement.Id; } }
+
+
 
     public HashSet<Edge<TNodeData, TEdgeData>> Edges { get; } = new();
 
     public Dictionary<Node<TNodeData, TEdgeData>, Edge<TNodeData, TEdgeData>> NeighborNodes { get; } = new();
 
-    public string? Id { get; set; }
 
     public INodeElement<TNodeData, TEdgeData> NodeElement { get; set; }
 
@@ -64,12 +66,12 @@ public class Node<TNodeData, TEdgeData> where TNodeData : IEquatable<TNodeData>
 
         Node<TNodeData, TEdgeData> node = new()
         {
-            Id = graphEditor.NodeIdMapper(data),
             GraphEditor = graphEditor,
             Data = data
         };
 
         node.NodeElement = new CircleNodeElement<TNodeData, TEdgeData>(element, SVG, node) {
+            Id = graphEditor.NodeIdMapper(data),
             Changed = null
         };
 
